@@ -1,0 +1,72 @@
+1.  Favorite director: Find the titles of all movies directed by Steven Spielberg. 
+
+select title from Movie where director = 'Steven Spielberg';
++-------------------------+
+| title                   |
++-------------------------+
+| E.T.                    |
+| Raiders of the Lost Ark |
++-------------------------+
+
+================================================================================
+
+2.  What were some good years for movies? Find all years that have a movie that received a rating of 4 or 5, and sort them in increasing order.
+
+select distinct year from Movie, Rating where Movie.mID = Rating.mID and stars>=4 order by year;
++------+
+| year |
++------+
+| 1937 |
+| 1939 |
+| 1981 |
+| 2009 |
++------+
+
+================================================================================
+
+3.  "After all, tomorrow is another day…" Find the names of all reviewers who rated Gone with the Wind.
+
+select distinct name from Reviewer, Rating, Movie where Rating.rID = Reviewer.rID and Movie.mID = Rating.mID and Movie.title = 'Gone with the Wind';
++----------------+
+| name           |
++----------------+
+| Sarah Martinez |
+| Mike Anderson  |
++----------------+
+
+================================================================================
+
+4.  Conflict of interest? For any rating where the reviewer is the same as the director of the movie, return the reviewer name, movie title, and number of stars.
+
+select R.name, M.title, Ra.stars from Movie M, Reviewer R, Rating Ra where M.mID = Ra.mID and R.rID = Ra.rID and M.director = R.name;
++---------------+--------+-------+
+| name          | title  | stars |
++---------------+--------+-------+
+| James Cameron | Avatar |     5 |
++---------------+--------+-------+
+
+================================================================================
+
+5.  Let’s make the Ratings table human-readable. First, replace the rID's with reviewers’ names and replace mID's with movie titles. Also, sort the data, first by reviewer name, then by movie title, and lastly by number of stars. (Blanks in the displayed result are NULL values.)
+
+select R.name, M.title, Ra.stars, Ra.ratingDate from Movie M, Reviewer R, Rating Ra where R.rID = Ra.rID and M.mID = Ra.mID order by R.name, M.title, Ra.stars;
++------------------+-------------------------+-------+------------+
+| name             | title                   | stars | ratingDate |
++------------------+-------------------------+-------+------------+
+| Ashley White     | E.T.                    |     3 | 2011-01-02 |
+| Brittany Harris  | Raiders of the Lost Ark |     2 | 2011-01-30 |
+| Brittany Harris  | Raiders of the Lost Ark |     4 | 2011-01-12 |
+| Brittany Harris  | The Sound of Music      |     2 | 2011-01-20 |
+| Chris Jackson    | E.T.                    |     2 | 2011-01-22 |
+| Chris Jackson    | Raiders of the Lost Ark |     4 | NULL       |
+| Chris Jackson    | The Sound of Music      |     3 | 2011-01-27 |
+| Daniel Lewis     | Snow White              |     4 | NULL       |
+| Elizabeth Thomas | Avatar                  |     3 | 2011-01-15 |
+| Elizabeth Thomas | Snow White              |     5 | 2011-01-19 |
+| James Cameron    | Avatar                  |     5 | 2011-01-20 |
+| Mike Anderson    | Gone with the Wind      |     3 | 2011-01-09 |
+| Sarah Martinez   | Gone with the Wind      |     2 | 2011-01-22 |
+| Sarah Martinez   | Gone with the Wind      |     4 | 2011-01-27 |
++------------------+-------------------------+-------+------------+
+
+================================================================================
