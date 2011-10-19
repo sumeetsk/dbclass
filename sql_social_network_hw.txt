@@ -100,6 +100,9 @@ select H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade from Highschooler
 | Austin |    11 | Jordan    |    12 | Kyle    |    12 |
 +--------+-------+-----------+-------+---------+-------+
 
+Sqlite doesn't allow searching for vectors, hence:
+select H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade from Highschooler H1, Highschooler H2, Highschooler H3, Likes L1, Friend F1, Friend F2 where H1.ID = L1.ID1 and H2.ID = L1.ID2 and F1.ID1 = H3.ID and F1.ID2 = H1.ID and F2.ID1 = H3.ID and F2.ID2 = H2.ID and H1.ID not in (select ID1 from Friend where ID2 = H2.ID);
+
 ===============================================================================
 
 10.  Duplication:  Find the difference between the number of students in the school and the number of different first names
@@ -197,5 +200,11 @@ select H2.name from Highschooler H1, Friend, Highschooler H2 where H1.name = 'Jo
 | Cassandra |
 | Andrew    |
 +-----------+
+
+===============================================================================
+
+19. If two students A and B are friends, and A likes B but not vice-versa, remove the Likes tuple.
+
+delete from Likes where ID1 in (select F1.ID1 from Friend F1, Likes L1 where F1.ID1 = L1.ID1 and F1.ID2 = L1.ID2 and F1.ID2 not in (select ID1 from Likes where ID2 = F1.ID1));
 
 ===============================================================================
