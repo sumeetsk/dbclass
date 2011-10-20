@@ -51,3 +51,37 @@
 )
 
 ================================================================================
+
+6. Find all pizzas that are eaten only by people younger than 24, or that cost less than $10 everywhere they're served. 
+
+(\project_{pizza}(Serves) \diff \project_{pizza}(\select_{price>'10'} Serves))
+\union
+(\project_{pizza}(Eats) \diff \project_{pizza}(\select_{age>='24'} Person \join Eats))
+
+================================================================================
+
+7. Find the age of the oldest person (or people) who eat mushroom pizza.
+
+\rename_{age2}(\project_{age}(\project_{name}(\select_{pizza = 'mushroom'}Eats) \join Person))
+\diff
+\project_{age2}(
+\rename_{age2}(\project_{age}(\project_{name}(\select_{pizza = 'mushroom'}Eats) \join Person)) 
+\join_{age2<age1} 
+\rename_{age1}(\project_{age}(\project_{name}(\select_{pizza = 'mushroom'}Eats) \join Person))
+)
+
+================================================================================
+
+8. Find all pizzerias that serve only pizzas eaten by people over 30. 
+
+\project_{pizzeria} Serves
+\diff
+\project_{pizzeria} (
+Serves
+\join
+((\project_{pizza} Serves)
+\diff
+(\project_{pizza}((\select_{age>'30'} Person) \join Eats)))
+)
+
+================================================================================
