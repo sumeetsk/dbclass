@@ -1,3 +1,15 @@
+1) Find the names of all students who are friends with someone named Gabriel. 
+
+select distinct H2.name from Highschooler H1, Friend F1, Highschooler H2 where H1.ID = F1.ID1 and H1.name = 'Gabriel' and H2.ID = F1.ID2;
+
+===============================================================================
+
+2) For every student who likes someone 2 or more grades younger than themselves, return that student's name and grade, and the name and grade of the student they like. 
+
+select H1.name, H1.grade, H2.name, H2.grade from Highschooler H1, Likes L1, Highschooler H2 where H1.ID = L1.ID1 and H2.ID = L1.ID2 and (H1.grade-H2.grade)>=2;
+
+===============================================================================
+
 3) Should totally be dating: For every pair of people who both like each other, return the name and grade of both people. Include each pair only once.
 
 select H1.name, H1.grade, H2.name, H2.grade from Highschooler H1, Highschooler H2, Likes L1, Likes L2 where H1.ID = L1.ID1 and H2.ID = L1.ID2 and L1.ID1 = L2.ID2 and L1.ID2 = L2.ID1 and L1.ID1 < L1.ID2;
@@ -26,39 +38,7 @@ select H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade from Highschooler
 
 5.  Need more intel:  Find all students who do not appear in the Likes table (as a person who likes or is liked) and return their names and grades. Sort by grade, then by name within each grade. (Hint: Without subqueries, you will need to use the EXCEPT operator.)
 
-create table t1 as (select distinct L1.ID2 from Likes L1) union (select distinct L1.ID1 from Likes L1);
-Query OK, 13 rows affected (0.03 sec)
-Records: 13  Duplicates: 0  Warnings: 0
-
-mysql> select * from t1;
-+------+
-| ID2  |
-+------+
-| 1709 |
-| 1689 |
-| 1247 |
-| 1468 |
-| 1304 |
-| 1934 |
-| 1501 |
-| 1101 |
-| 1782 |
-| 1911 |
-| 1641 |
-| 1316 |
-| 1025 |
-+------+
-13 rows in set (0.00 sec)
-
-select H1.name, H1.grade from Highschooler H1 where H1.ID not in (select ID2 from t1) order by grade, name;
-+---------+-------+
-| name    | grade |
-+---------+-------+
-| Jordan  |     9 |
-| Tiffany |     9 |
-| Logan   |    12 |
-+---------+-------+
-3 rows in set (0.00 sec)
+select name, grade from Highschooler H1 where H1.ID not in (select ID1 from Likes union select ID2 from Likes) order by grade, name;
 
 ===============================================================================
 
@@ -93,6 +73,9 @@ select distinct H1.name from Highschooler H1, Friend F1 where H1.ID = F1.ID1 and
 +----------+
 7 rows in set (0.00 sec)
 
+Alternate solution:
+select H1.name, H1.grade from Highschooler H1 where H1.ID not in (select H2.ID from Highschooler H2, Friend F1, Highschooler H3 where H2.ID = F1.ID1 and H3.ID = F1.ID2 and H2.grade <> H3.grade) order by grade, name;
+
 ===============================================================================
 
 8.  Broad-minded:  Find names and grades of students who only have friends in different grades.
@@ -116,6 +99,9 @@ select H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade from Highschooler
 | Austin |    11 | Jordan    |    12 | Andrew  |    10 |
 | Austin |    11 | Jordan    |    12 | Kyle    |    12 |
 +--------+-------+-----------+-------+---------+-------+
+
+Sqlite doesn't allow searching for vectors, hence:
+select H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade from Highschooler H1, Highschooler H2, Highschooler H3, Likes L1, Friend F1, Friend F2 where H1.ID = L1.ID1 and H2.ID = L1.ID2 and F1.ID1 = H3.ID and F1.ID2 = H1.ID and F2.ID1 = H3.ID and F2.ID2 = H2.ID and H1.ID not in (select ID1 from Friend where ID2 = H2.ID);
 
 ===============================================================================
 
@@ -214,5 +200,11 @@ select H2.name from Highschooler H1, Friend, Highschooler H2 where H1.name = 'Jo
 | Cassandra |
 | Andrew    |
 +-----------+
+
+===============================================================================
+
+19. If two students A and B are friends, and A likes B but not vice-versa, remove the Likes tuple.
+
+delete from Likes where ID1 in (select F1.ID1 from Friend F1, Likes L1 where F1.ID1 = L1.ID1 and F1.ID2 = L1.ID2 and F1.ID2 not in (select ID1 from Likes where ID2 = F1.ID1));
 
 ===============================================================================
