@@ -85,3 +85,18 @@ Serves
 )
 
 ================================================================================
+
+9. Find all pizzerias that serve every pizza eaten by people over 30. 
+
+#This is the best query I've found. It is also known as division in database terminology.
+
+(\project_{pizzeria}Serves) 
+\diff 
+    (\project_{pizzeria}((\project_{pizzeria}Serves) 
+        \cross 
+        (\project_{pizza}(\select_{age>'30'}Person \join Eats)) 
+    \diff 
+    (\project_{pizzeria,pizza}
+    ((\select_{age>'30'}Person \join Eats) \join Serves))))
+
+================================================================================
