@@ -70,3 +70,39 @@ select R.name, M.title, Ra.stars, Ra.ratingDate from Movie M, Reviewer R, Rating
 +------------------+-------------------------+-------+------------+
 
 ================================================================================
+
+6. Find the titles of all movies that have no ratings. 
+
+select title from Movie where mID not in (select mID from Rating)
+
+================================================================================
+
+7. Some reviewers didn't provide a date with their rating. Find the names of all reviewers who have ratings with a NULL value for the date. 
+
+select name from Reviewer where rID in (select rID from Rating where ratingDate is Null);
+
+================================================================================
+
+8. For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time, return the reviewer's name and the title of the movie. 
+
+select Re1.name, M1.title from Movie M1, Reviewer Re1, Rating Ra1, Rating Ra2 where M1.mID = Ra1.mID and Re1.rID = Ra1.rID and Ra1.rID = Ra2.rID and Ra1.mID = Ra2.mID and Ra1.ratingDate < Ra2.ratingDate and Ra1.stars < Ra2.stars;
+
+================================================================================
+
+9. For each movie that has at least one rating, find the highest number of stars that movie received. Return the movie title and number of stars. Sort by movie title. 
+
+select M1.title, max(Ra1.stars) from Movie M1, Rating Ra1 where M1.mID = Ra1.mID group by M1.title order by M1.title;
+
+================================================================================
+
+10. For each movie, return the title and the 'rating spread', that is, the difference between highest and lowest ratings given to that movie. Sort by rating spread from highest to lowest, then by movie title. 
+
+select M1.title, max(Ra1.stars) - min(Ra1.stars) as RatingSpread from Movie M1, Rating Ra1 where M1.mID = Ra1.mID group by M1.title order by RatingSpread desc, M1.title;
+
+================================================================================
+
+11. Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980. (Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after. Don't just calculate the overall average rating before and after 1980.) 
+
+select avg(pre1980.pre1980) - avg(post1980.post1980) from (select avg(Ra1.stars) as pre1980 from Movie M1, Rating Ra1 where M1.mID = Ra1.mID  and M1.year < 1980 group by M1.title) pre1980, (select avg(Ra1.stars) as post1980 from Movie M1, Rating Ra1 where M1.mID = Ra1.mID  and M1.year > 1980 group by M1.title) post1980;
+
+================================================================================
